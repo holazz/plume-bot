@@ -1,8 +1,10 @@
+import fsp from 'node:fs/promises'
 import { Contract, Wallet } from 'ethers'
-import { getProvider } from './utils'
-import logger from './utils/logger'
-import { getFaucetInfo } from './api'
-import { resolvedWallets } from './configs/wallets'
+import dayjs from '../utils/dayjs'
+import { generateWalletTitle, getProvider } from '../utils'
+import logger from '../utils/logger'
+import { getFaucetInfo } from '../api'
+import { resolvedWallets } from '../configs/wallets'
 
 const provider = getProvider()
 const contract = new Contract('0x075e2D02EBcea5dbcE6b7C9F3D203613c0D5B33B', [
@@ -45,7 +47,7 @@ async function getToken(
   })
 }
 
-async function run() {
+export async function run() {
   // resolvedWallets.map(async (wallet) => {
   //   const signer = new Wallet(wallet.privateKey, provider)
   //   const nonce = await signer.getTransactionCount()
@@ -62,7 +64,6 @@ async function run() {
   // })
   for (let i = 0; i < resolvedWallets.length; i++) {
     const wallet = resolvedWallets[i]
-    console.log(wallet)
     const signer = new Wallet(wallet.privateKey, provider)
     const nonce = await signer.getTransactionCount()
     try {
@@ -72,12 +73,18 @@ async function run() {
       ]
       await Promise.all(promises)
       logger.success(signer.address, '领取成功!')
+      await fsp.appendFile(
+        'faucet.txt',
+        `${dayjs().format('YYYY-MM-DD HH:mm:ss')} ${generateWalletTitle(
+          signer.address,
+        )}\n`.replace(
+          // eslint-disable-next-line no-control-regex
+          /\x1B\[\d+m/g,
+          '',
+        ),
+      )
     } catch (e: any) {
       logger.error(signer.address, e?.error?.reason || 'error')
     }
   }
 }
-
-run()
-
-// pm2 --name plumn-faucet start pnpm -- run faucet

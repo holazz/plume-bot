@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "tsx src/index.ts",
+    "faucet": "tsx src/faucet.ts",
     "schedule": "tsx src/schedule.ts",
     "lint": "eslint ."
   },

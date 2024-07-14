@@ -1,5 +1,13 @@
 import axios from 'axios'
 
+export async function getFaucetInfo(address: string, token: 'ETH' | 'GOON') {
+  const res = await axios.post('https://faucet.plumenetwork.xyz/api/faucet', {
+    token,
+    walletAddress: address,
+  })
+  return res.data
+}
+
 export async function getETHPrice(): Promise<number> {
   const res = await axios.get('https://min-api.cryptocompare.com/data/price', {
     params: {

@@ -23,7 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 
+.env
 src/configs/*
 !src/configs/*.example.ts
 records.csv
 log.txt
+check.txt
+faucet.txt

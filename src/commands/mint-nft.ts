@@ -73,7 +73,6 @@ export async function mintNFT(privateKey: string) {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-      timeout: 5000,
     },
   )
   const { tokenId, tokenUri, rarityTier, signature: s } = nftRes.data.nft
@@ -95,6 +94,7 @@ export async function run() {
       ) {
         await fsp.appendFile('nft.txt', `${signer.address}\n`)
       }
+      console.log(e)
       logger.error(
         signer.address,
         e?.response?.data?.message || e?.error?.reason || 'error',

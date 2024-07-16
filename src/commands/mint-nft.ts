@@ -94,7 +94,6 @@ export async function run() {
       ) {
         await fsp.appendFile('nft.txt', `${signer.address}\n`)
       }
-      console.log(e)
       logger.error(
         signer.address,
         e?.response?.data?.message || e?.error?.reason || 'error',

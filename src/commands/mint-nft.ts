@@ -5,13 +5,6 @@ import { getProvider } from '../utils'
 import logger from '../utils/logger'
 import { resolvedWallets } from '../configs/wallets'
 
-const mintedAddresses = (await fsp.readFile('nft.txt', 'utf-8'))
-  .split('\n')
-  .filter(Boolean)
-const filteredWallets = resolvedWallets.filter(
-  (wallet) => !mintedAddresses.includes(wallet.address),
-)
-
 const provider = getProvider()
 const contract = new Contract('0xb5F23eAe8B480131A346E45BE0923DBA905187AA', [
   {
@@ -80,6 +73,15 @@ export async function mintNFT(privateKey: string) {
 }
 
 export async function run() {
+  const mintedAddresses = (await fsp.readFile('nft.txt', 'utf-8'))
+    .split('\n')
+    .filter(Boolean)
+  const filteredWallets = resolvedWallets.filter(
+    (wallet) => !mintedAddresses.includes(wallet.address),
+  )
+
+  let errorCount = 0
+
   for (let i = 0; i < filteredWallets.length; i++) {
     const wallet = filteredWallets[i]
     const signer = new Wallet(wallet.privateKey, provider)
@@ -87,6 +89,7 @@ export async function run() {
       await mintNFT(wallet.privateKey)
       logger.success(signer.address, 'Mint NFT 成功!')
       await fsp.appendFile('nft.txt', `${signer.address}\n`)
+      errorCount = 0
     } catch (e: any) {
       if (
         e?.response?.data?.message ===
@@ -98,6 +101,11 @@ export async function run() {
         signer.address,
         e?.response?.data?.message || e?.error?.reason || 'error',
       )
+
+      errorCount++
+      if (errorCount >= 3) {
+        await run()
+      }
     }
   }
 }

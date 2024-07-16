@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "tsx src/index.ts",
+    "mint": "tsx src/commands/mint-nft.ts",
     "schedule": "tsx src/schedule.ts",
     "lint": "eslint ."
   },

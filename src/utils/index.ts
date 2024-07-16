@@ -86,12 +86,11 @@ export async function estimateGasFee(signer: Wallet, calls: Calls) {
 }
 
 export async function sendTransaction(signer: Wallet, calls: Calls) {
-  const nonce = await signer.getTransactionCount()
   const { contract, functionName, args, options } = calls
   const { hash } = options
     ? await contract.connect(signer)[functionName](...args, options)
     : await contract.connect(signer)[functionName](...args)
-  return { address: signer.address, nonce, tx: hash }
+  return { address: signer.address, tx: hash }
 }
 
 export async function getLatestTransactionAge(address: string) {

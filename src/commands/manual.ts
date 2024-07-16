@@ -107,9 +107,7 @@ export async function run() {
     .filter(Boolean)
     .forEach((r) => {
       console.log(
-        `\n${c.bold(generateWalletTitle(r!.address))}\n${c.bold(
-          'Nonce: ',
-        )}${c.yellow(r!.nonce.toString())}\n${c.bold('Transaction: ')}${c.green(
+        `\n${c.bold(generateWalletTitle(r!.address))}\n${c.bold('Transaction: ')}${c.green(
           `https://testnet-explorer.plumenetwork.xyz/tx/${r!.tx}`,
         )}\n`,
       )

@@ -52,7 +52,7 @@ async function run() {
     await fsp.mkdir('data').catch(() => {})
     await fsp.writeFile(
       `data/${wallet.address}-${inviteCount}.json`,
-      JSON.stringify(inviteWallets.wallets, null, 2),
+      JSON.stringify(inviteWallets, null, 2),
     )
     await fsp.appendFile(
       'invite.txt',

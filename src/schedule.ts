@@ -37,4 +37,4 @@ CronJob.from({
   timeZone: 'Asia/Shanghai',
 })
 
-// pm2 --name plumn start pnpm -- run schedule
+// pm2 --name plume start pnpm -- run schedule

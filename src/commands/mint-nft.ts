@@ -73,11 +73,22 @@ export async function mintNFT(privateKey: string) {
 }
 
 export async function run() {
-  const mintedAddresses = (await fsp.readFile('nft.txt', 'utf-8'))
-    .split('\n')
-    .filter(Boolean)
+  let mintedAddresses: any = []
+  try {
+    mintedAddresses = (await fsp.readFile('nft.txt', 'utf-8'))
+      .split('\n')
+      .filter(Boolean)
+  } catch {}
+  let noGasAddresses: any = []
+  try {
+    noGasAddresses = (await fsp.readFile('gas.txt', 'utf-8'))
+      .split('\n')
+      .filter(Boolean)
+  } catch {}
   const filteredWallets = resolvedWallets.filter(
-    (wallet) => !mintedAddresses.includes(wallet.address),
+    (wallet) =>
+      !mintedAddresses.includes(wallet.address) &&
+      !noGasAddresses.includes(wallet.address),
   )
 
   let errorCount = 0
@@ -96,6 +107,12 @@ export async function run() {
         'User has already minted and no burnTokenId provided'
       ) {
         await fsp.appendFile('nft.txt', `${signer.address}\n`)
+      }
+      if (
+        e?.error?.reason ===
+        'cannot estimate gas; transaction may fail or may require manual gas limit'
+      ) {
+        await fsp.appendFile('gas.txt', `${signer.address}\n`)
       }
       logger.error(
         signer.address,

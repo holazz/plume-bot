@@ -62,8 +62,22 @@ export async function run() {
   //     logger.error(signer.address, e?.error?.reason || 'error')
   //   }
   // })
-  for (let i = 0; i < resolvedWallets.length; i++) {
-    const wallet = resolvedWallets[i]
+  let noGasAddresses: any = []
+  try {
+    noGasAddresses = (await fsp.readFile('gas.txt', 'utf-8'))
+      .split('\n')
+      .filter(Boolean)
+  } catch {}
+  const sortedWallets = [
+    ...resolvedWallets.filter((wallet) =>
+      noGasAddresses.includes(wallet.address),
+    ),
+    ...resolvedWallets.filter(
+      (wallet) => !noGasAddresses.includes(wallet.address),
+    ),
+  ]
+  for (let i = 0; i < sortedWallets.length; i++) {
+    const wallet = sortedWallets[i]
     const signer = new Wallet(wallet.privateKey, provider)
     const nonce = await signer.getTransactionCount()
     try {

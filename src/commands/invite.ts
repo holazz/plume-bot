@@ -36,9 +36,12 @@ async function run() {
     const wallet = resolvedWallets[i]
     const res = await retry(login, Number.MAX_SAFE_INTEGER)(wallet.privateKey)
     const referralCode = res.user.referralCode.split('-')[1]
-    logger.info(wallet.address, `邀请码: ${referralCode}`)
     const inviteCount = Math.floor(Math.random() * (1000 - 500 + 1) + 500)
     const inviteWallets = generateWallets(inviteCount)
+    logger.info(
+      wallet.address,
+      `邀请码: ${referralCode} 邀请人数: ${inviteCount}`,
+    )
     for (const inviteWallet of inviteWallets.wallets) {
       const res = await retry(
         login,

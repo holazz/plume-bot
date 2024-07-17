@@ -49,6 +49,7 @@ async function run() {
       )(inviteWallet.privateKey)
       logger.info(wallet.address, res.user.walletAddress)
     }
+    await fsp.mkdir('data').catch(() => {})
     await fsp.writeFile(
       `data/${wallet.address}-${inviteCount}.json`,
       JSON.stringify(inviteWallets.wallets, null, 2),

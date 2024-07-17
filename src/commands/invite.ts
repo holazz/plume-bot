@@ -44,7 +44,7 @@ async function run() {
         login,
         Number.MAX_SAFE_INTEGER,
       )(inviteWallet.privateKey)
-      console.log(res.user.walletAddress)
+      logger.info(wallet.address, res.user.walletAddress)
     }
     await fsp.writeFile(
       `data/${wallet.address}-${inviteCount}.json`,

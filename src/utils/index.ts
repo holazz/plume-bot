@@ -1,10 +1,10 @@
 import 'dotenv/config'
-import { Contract, providers, utils } from 'ethers'
+import { Contract, Wallet, providers, utils } from 'ethers'
 import c from 'picocolors'
 import { resolvedWallets } from '../configs/wallets'
 import { getETHPrice, getLatestTransaction } from '../api'
 import dayjs from './dayjs'
-import type { BigNumber, Wallet } from 'ethers'
+import type { BigNumber } from 'ethers'
 import type { Calls } from '../types'
 
 export function getProvider() {
@@ -136,6 +136,22 @@ export function getRandomElementFromArray(array: any[]) {
 
   const randomIndex = Math.floor(Math.random() * array.length)
   return array[randomIndex]
+}
+
+export function generateWallets(count = 100) {
+  const mnemonic = Wallet.createRandom().mnemonic.phrase
+  const wallets = []
+  for (let i = 0; i < count; i++) {
+    const wallet = Wallet.fromMnemonic(mnemonic, `m/44'/60'/0'/0/${i}`)
+    wallets.push({
+      address: wallet.address,
+      privateKey: wallet.privateKey,
+    })
+  }
+  return {
+    mnemonic,
+    wallets,
+  }
 }
 
 export function retry<T>(

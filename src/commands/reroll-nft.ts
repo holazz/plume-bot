@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import axios from 'axios'
 import { Contract, Wallet } from 'ethers'
 import pLimit from 'p-limit'
@@ -12,14 +13,37 @@ const contract = new Contract('0xb5F23eAe8B480131A346E45BE0923DBA905187AA', [
   {
     inputs: [
       {
+        internalType: 'bytes32',
+        name: 'role',
+        type: 'bytes32',
+      },
+      {
+        internalType: 'address',
+        name: 'callerConfirmation',
+        type: 'address',
+      },
+    ],
+    name: 'renounceRole',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
         internalType: 'uint256',
-        name: '_tokenId',
+        name: '_newtokenId',
         type: 'uint256',
       },
       {
         internalType: 'string',
-        name: '_tokenUri',
+        name: '_newtokenUri',
         type: 'string',
+      },
+      {
+        internalType: 'uint256',
+        name: 'burnTokenId',
+        type: 'uint256',
       },
       {
         internalType: 'bytes',
@@ -32,14 +56,14 @@ const contract = new Contract('0xb5F23eAe8B480131A346E45BE0923DBA905187AA', [
         type: 'uint8',
       },
     ],
-    name: 'mintNFT',
+    name: 'rerollNFT',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
 ])
 
-async function mintNFT(signer: Wallet) {
+export async function rerollNFT(signer: Wallet, burnTokenId: number) {
   const nonce = await signer.getTransactionCount()
   const accessToken = authData.find(
     (item) => item.address === signer.address,
@@ -48,19 +72,22 @@ async function mintNFT(signer: Wallet) {
     const res = await axios.get(
       'https://points-api.plumenetwork.xyz/nft-minting',
       {
+        params: {
+          burnTokenId,
+        },
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       },
     )
     const { tokenId, tokenUri, rarityTier, signature } = res.data.nft
-    logger.info(signer.address, `Mint NFT: ${tokenId} 中...`)
+    logger.info(signer.address, `Reroll NFT: ${tokenId} 中...`)
     await contract
       .connect(signer)
-      .mintNFT(tokenId, tokenUri, signature, rarityTier, {
+      .rerollNFT(tokenId, tokenUri, burnTokenId, signature, rarityTier, {
         nonce,
       })
-    logger.success(signer.address, 'Mint NFT 成功!')
+    logger.success(signer.address, 'Reroll NFT 成功!')
   } catch (e: any) {
     logger.error(
       signer.address,
@@ -77,12 +104,18 @@ async function mintNFT(signer: Wallet) {
 export async function run() {
   const limit = pLimit(100)
   const filteredWallets = resolvedWallets.filter(
-    (wallet) => !nftData.find((item) => item.address === wallet.address)?.id,
+    (wallet) =>
+      nftData.find((item) => item.address === wallet.address)?.rarity &&
+      nftData.find((item) => item.address === wallet.address)!.rarity <
+        Number(process.env.REROLL_RARITY),
   )
   const promises = filteredWallets.map((wallet) => {
     return limit(() => {
       const signer = new Wallet(wallet.privateKey, provider)
-      return retry(mintNFT, Number.MAX_SAFE_INTEGER)(signer)
+      const tokenId = nftData.find(
+        (item) => item.address === wallet.address,
+      )!.id
+      return retry(rerollNFT, Number.MAX_SAFE_INTEGER)(signer, Number(tokenId))
     })
   })
   await Promise.all(promises)

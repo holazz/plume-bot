@@ -30,7 +30,6 @@ records.csv
 log.txt
 check.txt
 faucet.txt
-nft.txt
-gas.txt
-invite.txt
+auth.json
+nft.json
 data

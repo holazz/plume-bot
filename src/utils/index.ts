@@ -121,7 +121,7 @@ export function shortenAddress(address: string) {
 export function generateWalletTitle(address: string) {
   const wallet = resolvedWallets.find(
     (w) => w.address.toLowerCase() === address.toLowerCase(),
-  )!
+  ) || { label: address, address }
   return `${wallet.label} ${c.dim(`(${shortenAddress(wallet.address)})`)}`
 }
 

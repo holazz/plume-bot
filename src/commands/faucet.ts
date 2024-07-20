@@ -1,6 +1,8 @@
+import fsp from 'node:fs/promises'
 import { Contract, Wallet } from 'ethers'
 import pLimit from 'p-limit'
-import { getProvider, retry } from '../utils'
+import dayjs from '../utils/dayjs'
+import { generateWalletTitle, getProvider, retry } from '../utils'
 import logger from '../utils/logger'
 import { getFaucetInfo } from '../api'
 import { resolvedWallets } from '../configs/wallets'
@@ -50,6 +52,16 @@ async function getAllToken(signer: Wallet) {
     ]
     await Promise.all(promises)
     logger.success(signer.address, '领取成功!')
+    await fsp.appendFile(
+      'faucet.txt',
+      `${dayjs().format('YYYY-MM-DD HH:mm:ss')} ${generateWalletTitle(
+        signer.address,
+      )}\n`.replace(
+        // eslint-disable-next-line no-control-regex
+        /\x1B\[\d+m/g,
+        '',
+      ),
+    )
   } catch (e: any) {
     logger.error(signer.address, e?.error?.reason || 'error')
   }

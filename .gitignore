@@ -28,6 +28,7 @@ src/configs/*
 !src/configs/*.example.ts
 records.csv
 log.txt
+check.txt
 auth.json
 nft.json
 data

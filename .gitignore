@@ -28,7 +28,7 @@ src/configs/*
 !src/configs/*.example.ts
 records.csv
 log.txt
-fauccet.txt
+faucet.txt
 check.txt
 nft.txt
 auth.json

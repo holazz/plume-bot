@@ -29,7 +29,7 @@ pnpm run faucet
 ### 签到
 
 ```sh
-pnpm run check-in
+pnpm run check
 ```
 
 ### Mint NFT

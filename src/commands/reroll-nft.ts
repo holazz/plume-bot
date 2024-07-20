@@ -1,8 +1,10 @@
 import 'dotenv/config'
+import fsp from 'node:fs/promises'
 import axios from 'axios'
 import { Contract, Wallet } from 'ethers'
 import pLimit from 'p-limit'
-import { getProvider, retry } from '../utils'
+import dayjs from '../utils/dayjs'
+import { generateWalletTitle, getProvider, retry } from '../utils'
 import logger from '../utils/logger'
 import { resolvedWallets } from '../configs/wallets'
 import authData from '../../auth.json'
@@ -88,6 +90,16 @@ export async function rerollNFT(signer: Wallet, burnTokenId: number) {
         nonce,
       })
     logger.success(signer.address, 'Reroll NFT 成功!')
+    await fsp.appendFile(
+      'nft.txt',
+      `${dayjs().format('YYYY-MM-DD HH:mm:ss')} ${generateWalletTitle(
+        signer.address,
+      )} Reroll\n`.replace(
+        // eslint-disable-next-line no-control-regex
+        /\x1B\[\d+m/g,
+        '',
+      ),
+    )
   } catch (e: any) {
     logger.error(
       signer.address,

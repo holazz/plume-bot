@@ -87,5 +87,3 @@ export async function run() {
   })
   await Promise.all(promises)
 }
-
-run()

@@ -29,5 +29,3 @@ export async function run() {
   await fsp.writeFile('nft.json', `${JSON.stringify(res, null, 2)}\n`)
   return res
 }
-
-run()

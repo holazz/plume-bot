@@ -4,11 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "tsx src/index.ts",
-    "auth": "tsx src/commands/auth.ts",
-    "nft": "tsx src/commands/fetch-nft.ts",
-    "mint": "pnpm run nft && tsx src/commands/mint-nft.ts",
-    "reroll": "pnpm run nft && tsx src/commands/reroll-nft.ts",
-    "invite": "tsx src/commands/invite.ts",
+    "auth": "tsx src/commands/run/auth.ts",
+    "faucet": "tsx src/commands/run/faucet.ts",
+    "check": "tsx src/commands/run/check-in.ts",
+    "nft": "tsx src/commands/run/fetch-nft.ts",
+    "mint": "pnpm run nft && tsx src/commands/run/mint-nft.ts",
+    "reroll": "pnpm run nft && tsx src/commands/run/reroll-nft.ts",
+    "invite": "tsx src/commands/run/invite.ts",
     "schedule": "tsx src/schedule.ts",
     "lint": "eslint ."
   },

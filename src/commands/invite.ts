@@ -10,7 +10,7 @@ import authData from '../../auth.json'
 
 const provider = getProvider()
 
-async function run() {
+export async function run() {
   const limit = pLimit(10)
   for (let i = 0; i < resolvedWallets.length; i++) {
     const wallet = resolvedWallets[i]
@@ -38,5 +38,3 @@ async function run() {
     )
   }
 }
-
-run()

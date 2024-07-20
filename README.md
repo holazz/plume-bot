@@ -3,7 +3,7 @@
 1. 安装依赖
   
 ```sh
-  pnpm install
+pnpm install
 ```
 
 2. 获取 `accessToken`
@@ -12,7 +12,7 @@
 pnpm run auth
 ```
 
-## 常用指令
+## 手动运行方式
 
 ### 交互
 
@@ -20,10 +20,16 @@ pnpm run auth
 pnpm run dev
 ```
 
-### 邀请
+### 领水
 
 ```sh
-pnpm run invite
+pnpm run faucet
+```
+
+### 签到
+
+```sh
+pnpm run check-in
 ```
 
 ### Mint NFT
@@ -32,13 +38,27 @@ pnpm run invite
 pnpm run mint
 ```
 
-### 重新随机 NFT
+### Reroll NFT
 
 ```sh
 pnpm run reroll
 ```
 
-## 定时任务
+### 邀请
+
+```sh
+pnpm run invite
+```
+
+## 定时任务运行方式
+
+1. 安装 `pm2`
+
+```sh
+pnpm install -g pm2
+```
+
+2. 启动定时任务
 
 ```sh 
 pm2 --name plume start pnpm -- run schedule

@@ -7,7 +7,7 @@ import { resolvedWallets } from '../configs/wallets'
 
 const provider = getProvider()
 
-async function run() {
+export async function run() {
   const limit = pLimit(100)
   const promises = resolvedWallets.map((wallet) =>
     limit(() => {
@@ -18,5 +18,3 @@ async function run() {
   const res = await Promise.all(promises)
   await fsp.writeFile('auth.json', `${JSON.stringify(res, null, 2)}\n`)
 }
-
-run()

@@ -36,7 +36,15 @@ async function checkIn(signer: Wallet) {
       ),
     )
   } catch (e: any) {
-    logger.error(signer.address, e?.error?.reason || 'error')
+    logger.error(
+      signer.address,
+      e?.response?.data?.message ||
+        e?.response?.data ||
+        e?.error?.reason ||
+        e?.cause ||
+        e?.reason ||
+        'error',
+    )
   }
 }
 

@@ -3,7 +3,7 @@ import axios from 'axios'
 import { Contract, Wallet } from 'ethers'
 import pLimit from 'p-limit'
 import dayjs from '../utils/dayjs'
-import { generateWalletTitle, getProvider, retry } from '../utils'
+import { eqAddress, generateWalletTitle, getProvider, retry } from '../utils'
 import logger from '../utils/logger'
 import { resolvedWallets } from '../configs/wallets'
 import authData from '../../auth.json'
@@ -43,8 +43,8 @@ const contract = new Contract('0xb5F23eAe8B480131A346E45BE0923DBA905187AA', [
 
 async function mintNFT(signer: Wallet) {
   const nonce = await signer.getTransactionCount()
-  const accessToken = authData.find(
-    (item) => item.address === signer.address,
+  const accessToken = authData.find((item) =>
+    eqAddress(item.address, signer.address),
   )!.accessToken
   try {
     const res = await axios.get(
@@ -89,7 +89,8 @@ async function mintNFT(signer: Wallet) {
 export async function run() {
   const limit = pLimit(100)
   const filteredWallets = resolvedWallets.filter(
-    (wallet) => !nftData.find((item) => item.address === wallet.address)?.id,
+    (wallet) =>
+      !nftData.find((item) => eqAddress(item.address, wallet.address))?.id,
   )
   const promises = filteredWallets.map((wallet) => {
     return limit(() => {

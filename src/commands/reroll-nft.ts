@@ -4,7 +4,7 @@ import axios from 'axios'
 import { Contract, Wallet } from 'ethers'
 import pLimit from 'p-limit'
 import dayjs from '../utils/dayjs'
-import { generateWalletTitle, getProvider, retry } from '../utils'
+import { eqAddress, generateWalletTitle, getProvider, retry } from '../utils'
 import logger from '../utils/logger'
 import { resolvedWallets } from '../configs/wallets'
 import authData from '../../auth.json'
@@ -67,8 +67,8 @@ const contract = new Contract('0xb5F23eAe8B480131A346E45BE0923DBA905187AA', [
 
 export async function rerollNFT(signer: Wallet, burnTokenId: number) {
   const nonce = await signer.getTransactionCount()
-  const accessToken = authData.find(
-    (item) => item.address === signer.address,
+  const accessToken = authData.find((item) =>
+    eqAddress(item.address, signer.address),
   )!.accessToken
   try {
     const res = await axios.get(
@@ -117,15 +117,15 @@ export async function run() {
   const limit = pLimit(100)
   const filteredWallets = resolvedWallets.filter(
     (wallet) =>
-      nftData.find((item) => item.address === wallet.address)?.rarity &&
-      nftData.find((item) => item.address === wallet.address)!.rarity <
+      nftData.find((item) => eqAddress(item.address, wallet.address))?.rarity &&
+      nftData.find((item) => eqAddress(item.address, wallet.address))!.rarity <
         Number(process.env.REROLL_RARITY),
   )
   const promises = filteredWallets.map((wallet) => {
     return limit(() => {
       const signer = new Wallet(wallet.privateKey, provider)
-      const tokenId = nftData.find(
-        (item) => item.address === wallet.address,
+      const tokenId = nftData.find((item) =>
+        eqAddress(item.address, wallet.address),
       )!.id
       return retry(rerollNFT, Number.MAX_SAFE_INTEGER)(signer, Number(tokenId))
     })

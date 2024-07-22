@@ -3,7 +3,7 @@ import fsp from 'node:fs/promises'
 import pLimit from 'p-limit'
 import { Wallet } from 'ethers'
 import logger from '../utils/logger'
-import { generateWallets, getProvider, retry } from '../utils'
+import { eqAddress, generateWallets, getProvider, retry } from '../utils'
 import { login } from '../api'
 import { resolvedWallets } from '../configs/wallets'
 import authData from '../../auth.json'
@@ -14,8 +14,8 @@ export async function run() {
   const limit = pLimit(10)
   for (let i = 0; i < resolvedWallets.length; i++) {
     const wallet = resolvedWallets[i]
-    const referralCode = authData.find(
-      (item) => item.address === wallet.address,
+    const referralCode = authData.find((item) =>
+      eqAddress(item.address, wallet.address),
     )!.referralCode
     const [min, max] = JSON.parse(process.env.INVITE_RANGE!)
     const inviteCount = Math.floor(Math.random() * (max - min + 1) + min)

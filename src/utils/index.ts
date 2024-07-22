@@ -118,10 +118,15 @@ export function shortenAddress(address: string) {
   return `${address.slice(0, 6)}...${address.slice(-4)}`
 }
 
+export function eqAddress(addressA: string, addressB: string) {
+  return addressA.toLowerCase() === addressB.toLowerCase()
+}
+
 export function generateWalletTitle(address: string) {
-  const wallet = resolvedWallets.find(
-    (w) => w.address.toLowerCase() === address.toLowerCase(),
-  ) || { label: address, address }
+  const wallet = resolvedWallets.find((w) => eqAddress(w.address, address)) || {
+    label: address,
+    address,
+  }
   return `${wallet.label} ${c.dim(`(${shortenAddress(wallet.address)})`)}`
 }
 

@@ -134,6 +134,13 @@ export function generateModuleTitle(title: string) {
   return `${c.bold(title)} ${c.dim('›')}`
 }
 
+export function generageRandomName() {
+  const random = Math.random().toString(36).slice(2)
+  const length = Math.floor(Math.random() * 4) + 6
+  const name = random.slice(0, length)
+  return name
+}
+
 export function getRandomElementFromArray(array: any[]) {
   if (array.length === 0) {
     return null

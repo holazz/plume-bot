@@ -14,7 +14,10 @@ async function getNftInfo(address: string) {
       return { address }
     }
     const collection = res.data.items.find((item: any) =>
-      eqAddress(item.address, '0xb5F23eAe8B480131A346E45BE0923DBA905187AA'),
+      eqAddress(
+        item.token.address,
+        '0xb5F23eAe8B480131A346E45BE0923DBA905187AA',
+      ),
     )
     if (!collection) {
       return { address }

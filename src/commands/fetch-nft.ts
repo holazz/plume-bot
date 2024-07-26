@@ -6,18 +6,26 @@ import logger from '../utils/logger'
 import { resolvedWallets } from '../configs/wallets'
 
 async function getNftInfo(address: string) {
-  const res = await axios.get(
-    `https://plume-testnet.explorer.caldera.xyz/api/v2/addresses/${address}/nft/collections?type=`,
-  )
-  if (res.data.items.length === 0) {
-    return { address }
+  try {
+    const res = await axios.get(
+      `https://plume-testnet.explorer.caldera.xyz/api/v2/addresses/${address}/nft/collections?type=`,
+    )
+    if (res.data.items.length === 0) {
+      return { address }
+    }
+    const id = res.data.items[0].token_instances[0].id
+    const rarity =
+      res.data.items[0].token_instances[0].metadata.attributes[7].value
+    const tier =
+      res.data.items[0].token_instances[0].metadata.attributes[8].value
+    logger.info(address, `ID: ${id} Rarity: ${rarity} Tier: ${tier}`)
+    return { address, id, rarity, tier }
+  } catch (e) {
+    if (axios.isAxiosError(e) && e.response?.status === 404) {
+      return { address }
+    }
+    throw e
   }
-  const id = res.data.items[0].token_instances[0].id
-  const rarity =
-    res.data.items[0].token_instances[0].metadata.attributes[7].value
-  const tier = res.data.items[0].token_instances[0].metadata.attributes[8].value
-  logger.info(address, `ID: ${id} Rarity: ${rarity} Tier: ${tier}`)
-  return { address, id, rarity, tier }
 }
 
 export async function run() {

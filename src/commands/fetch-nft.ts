@@ -1,7 +1,7 @@
 import fsp from 'node:fs/promises'
 import axios from 'axios'
 import pLimit from 'p-limit'
-import { retry } from '../utils'
+import { eqAddress, retry } from '../utils'
 import logger from '../utils/logger'
 import { resolvedWallets } from '../configs/wallets'
 
@@ -13,11 +13,15 @@ async function getNftInfo(address: string) {
     if (res.data.items.length === 0) {
       return { address }
     }
-    const id = res.data.items[0].token_instances[0].id
-    const rarity =
-      res.data.items[0].token_instances[0].metadata.attributes[7].value
-    const tier =
-      res.data.items[0].token_instances[0].metadata.attributes[8].value
+    const collection = res.data.items.find((item: any) =>
+      eqAddress(item.address, '0xb5F23eAe8B480131A346E45BE0923DBA905187AA'),
+    )
+    if (!collection) {
+      return { address }
+    }
+    const id = collection.token_instances[0].id
+    const rarity = collection.token_instances[0].metadata.attributes[7].value
+    const tier = collection.token_instances[0].metadata.attributes[8].value
     logger.info(address, `ID: ${id} Rarity: ${rarity} Tier: ${tier}`)
     return { address, id, rarity, tier }
   } catch (e) {

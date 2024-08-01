@@ -13,55 +13,18 @@ import nftData from '../../nft.json'
 const provider = getProvider()
 const contract = new Contract('0xb5F23eAe8B480131A346E45BE0923DBA905187AA', [
   {
+    type: 'function',
+    name: 'rerollNft',
     inputs: [
-      {
-        internalType: 'bytes32',
-        name: 'role',
-        type: 'bytes32',
-      },
-      {
-        internalType: 'address',
-        name: 'callerConfirmation',
-        type: 'address',
-      },
+      { name: '_newtokenId', type: 'uint256', internalType: 'uint256' },
+      { name: '_newtokenUri', type: 'string', internalType: 'string' },
+      { name: 'burnTokenId', type: 'uint256', internalType: 'uint256' },
+      { name: 'signature', type: 'bytes', internalType: 'bytes' },
+      { name: 'nonce', type: 'bytes32', internalType: 'bytes32' },
+      { name: 'tier', type: 'uint8', internalType: 'uint8' },
     ],
-    name: 'renounceRole',
     outputs: [],
     stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: '_newtokenId',
-        type: 'uint256',
-      },
-      {
-        internalType: 'string',
-        name: '_newtokenUri',
-        type: 'string',
-      },
-      {
-        internalType: 'uint256',
-        name: 'burnTokenId',
-        type: 'uint256',
-      },
-      {
-        internalType: 'bytes',
-        name: 'signature',
-        type: 'bytes',
-      },
-      {
-        internalType: 'uint8',
-        name: 'tier',
-        type: 'uint8',
-      },
-    ],
-    name: 'rerollNFT',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
   },
 ])
 
@@ -82,13 +45,27 @@ export async function rerollNFT(signer: Wallet, burnTokenId: number) {
         },
       },
     )
-    const { tokenId, tokenUri, rarityTier, signature } = res.data.nft
+    const {
+      tokenId,
+      tokenUri,
+      rarityTier,
+      signature,
+      nonce: nftNonce,
+    } = res.data.nft
     logger.info(signer.address, `Reroll NFT: ${tokenId} 中...`)
     await contract
       .connect(signer)
-      .rerollNFT(tokenId, tokenUri, burnTokenId, signature, rarityTier, {
-        nonce,
-      })
+      .rerollNft(
+        tokenId,
+        tokenUri,
+        burnTokenId,
+        signature,
+        nftNonce,
+        rarityTier,
+        {
+          nonce,
+        },
+      )
     logger.success(signer.address, 'Reroll NFT 成功!')
     await fsp.appendFile(
       'nft.txt',

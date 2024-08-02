@@ -1,9 +1,39 @@
 import fsp from 'node:fs/promises'
 import axios from 'axios'
 import pLimit from 'p-limit'
-import { eqAddress, retry } from '../utils'
+import { Contract } from 'ethers'
+import { eqAddress, getProvider, retry } from '../utils'
 import logger from '../utils/logger'
 import { resolvedWallets } from '../configs/wallets'
+
+const provider = getProvider()
+const contract = new Contract('0xb5F23eAe8B480131A346E45BE0923DBA905187AA', [
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'tokenURI',
+    outputs: [
+      {
+        internalType: 'string',
+        name: '',
+        type: 'string',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+])
+
+async function getNftMetadata(id: Number) {
+  const tokenURI = await contract.connect(provider).tokenURI(id)
+  const res = await axios.get(tokenURI)
+  return res.data
+}
 
 async function getNftInfo(address: string) {
   try {
@@ -22,9 +52,16 @@ async function getNftInfo(address: string) {
     if (!collection) {
       return { address }
     }
+
     const id = collection.token_instances[0].id
-    const rarity = collection.token_instances[0].metadata.attributes[7].value
-    const tier = collection.token_instances[0].metadata.attributes[8].value
+    let rarity = collection.token_instances[0]?.metadata?.attributes?.[7]?.value
+    let tier = collection.token_instances[0]?.metadata?.attributes?.[8]?.value
+
+    if (!collection.token_instances[0].metadata) {
+      const metadata = await getNftMetadata(id)
+      rarity = metadata.attributes[7].value
+      tier = metadata.attributes[8].value
+    }
     logger.info(address, `ID: ${id} Rarity: ${rarity} Tier: ${tier}`)
     return { address, id, rarity, tier }
   } catch (e) {

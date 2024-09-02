@@ -9,6 +9,7 @@
     "check": "tsx src/commands/run/check-in.ts",
     "nft": "tsx src/commands/run/fetch-nft.ts",
     "mint": "pnpm run nft && tsx src/commands/run/mint-nft.ts",
+    "mint-perch": "tsx src/commands/run/mint-perch.ts",
     "reroll": "pnpm run nft && tsx src/commands/run/reroll-nft.ts",
     "invite": "tsx src/commands/run/invite.ts",
     "schedule": "tsx src/schedule.ts",

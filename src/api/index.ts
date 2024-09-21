@@ -55,3 +55,37 @@ export async function login(signer: Wallet, referralCode?: string) {
     referralCode: res.data.user.referralCode.split('-')[1],
   }
 }
+
+export async function notify(signer: Wallet) {
+  const timestamp = Math.round(Date.now() / 1e3)
+  const dappAddress = 'pperu343eryaoxl6obev'
+  const walletPublicKey = signer.address.toLowerCase()
+
+  const message = `Sign in with Notifi 
+
+    No password needed or gas is needed. 
+
+    Clicking “Approve” only means you have proved this wallet is owned by you! 
+
+    This request will not trigger any transaction or cost any gas fees. 
+
+    Use of our website and service is subject to our terms of service and privacy policy. 
+ 
+ 'Nonce:' ${walletPublicKey}${dappAddress}${timestamp}`
+
+  const signature = await signer.signMessage(message)
+  const res = await axios.post('https://api.notifi.network/gql', {
+    query:
+      'mutation logInFromDapp($walletBlockchain: WalletBlockchain!, $walletPublicKey: String!, $dappAddress: String!, $timestamp: Long!, $signature: String!, $accountId: String) {\n  logInFromDapp(\n    dappLogInInput: {walletBlockchain: $walletBlockchain, walletPublicKey: $walletPublicKey, dappAddress: $dappAddress, timestamp: $timestamp, accountId: $accountId}\n    signature: $signature\n  ) {\n    ...UserFragment\n  }\n}\n\nfragment UserFragment on User {\n  email\n  emailConfirmed\n  authorization {\n    ...AuthorizationFragment\n  }\n  roles\n}\n\nfragment AuthorizationFragment on Authorization {\n  token\n  expiry\n}',
+    variables: {
+      walletBlockchain: 'AVALANCHE',
+      walletPublicKey,
+      dappAddress,
+      timestamp,
+      signature,
+    },
+    operationName: 'logInFromDapp',
+  })
+  logger.success(signer.address, '登录成功!')
+  return res.data.data.logInFromDapp
+}

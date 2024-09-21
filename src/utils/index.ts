@@ -9,7 +9,7 @@ import type { Calls } from '../types'
 
 export function getProvider() {
   return new providers.JsonRpcProvider(
-    'https://testnet-rpc.plumenetwork.xyz/http',
+    'https://testnet-rpc.plumenetwork.xyz/infra-partner-http',
   )
 }
 

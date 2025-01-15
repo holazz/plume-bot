@@ -89,3 +89,22 @@ export async function notify(signer: Wallet) {
   logger.success(signer.address, '登录成功!')
   return res.data.data.logInFromDapp
 }
+
+export async function register(signer: Wallet) {
+  const message = `By signing this message, I confirm that I have read and agreed to Plume's Airdrop Terms of Service. This does not cost any gas to sign.`
+  const signature = await signer.signMessage(message)
+  const res = await axios.post(
+    'https://registration.plumenetwork.xyz/api/sign-write',
+    {
+      message,
+      signature,
+      address: signer.address,
+      twitterEncryptedUsername: null,
+      twitterEncryptedId: null,
+      discordEncryptedUsername: null,
+      discordEncryptedId: null,
+    },
+  )
+  logger.success(signer.address, '注册成功!')
+  return res.data
+}

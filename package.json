@@ -13,6 +13,7 @@
     "reroll": "pnpm run nft && tsx src/commands/run/reroll-nft.ts",
     "invite": "tsx src/commands/run/invite.ts",
     "notify": "tsx src/commands/run/notify.ts",
+    "register": "tsx src/commands/run/register.ts",
     "schedule": "tsx src/schedule.ts",
     "lint": "eslint ."
   },
